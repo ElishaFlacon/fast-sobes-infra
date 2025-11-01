@@ -1,0 +1,13 @@
+{
+    "Servers": {
+        "Fast Sobes": {
+            "Name": "Fast Sobes",
+            "Group": "Servers",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "postgres",
+            "SSLMode": "prefer"
+        }
+    }
+}

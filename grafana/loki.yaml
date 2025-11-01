@@ -12,7 +12,7 @@ ingester:
     ring:
       kvstore:
         store: inmemory
-      replication_factor: 1
+    replication_factor: 1
   chunk_idle_period: 5m
   max_chunk_age: 1h
 
@@ -20,7 +20,7 @@ schema_config:
   configs:
     - from: 2022-01-01
       store: boltdb-shipper
-      object_store: filesystem
+      object_store: s3
       schema: v11
       index:
         prefix: index_
@@ -30,23 +30,20 @@ storage_config:
   boltdb_shipper:
     active_index_directory: /var/loki/index
     cache_location: /var/loki/boltdb-cache
-    shared_store: filesystem
-  filesystem:
-    directory: /var/loki/chunks
+    shared_store: s3
+  aws:
+    s3: http://${MINIO_ACCESS_KEY}:${MINIO_SECRET_KEY}@minio:9000/${MINIO_BUCKET}
+    s3forcepathstyle: true
+    insecure: true
 
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
-  volume_enabled: true
 
 chunk_store_config:
   max_look_back_period: 0s
 
-table_manager:
-  retention_deletes_enabled: false
-  retention_period: 0s
-
 compactor:
   working_directory: /var/loki/compactor
-  shared_store: filesystem
+  shared_store: s3
