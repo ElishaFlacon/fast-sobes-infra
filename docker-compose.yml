@@ -19,7 +19,7 @@ services:
     ports:
       - "${PROMETHEUS_PORT}:9090"
     volumes:
-      - ./grafana/prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+      - ./grafana/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - prometheus-storage:/prometheus
     networks:
       - backend
@@ -28,11 +28,20 @@ services:
   loki:
     image: grafana/loki:2.9.0
     container_name: loki
-    command: -config.file=/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
     ports:
       - "${LOKI_PORT}:3100"
+    environment:
+      LOKI_S3_ENDPOINT: ${LOKI_S3_ENDPOINT}
+      MINIO_LOKI_BUCKET: ${MINIO_LOKI_BUCKET}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
     volumes:
       - ./grafana/loki.yaml:/etc/loki/local-config.yaml:ro
+      - ./.loki/compactor:/var/loki/compactor
+      - ./.loki/boltdb-cache:/var/loki/boltdb-cache
+      - ./.loki/index:/var/loki/index
+      - ./.loki/wal:/var/loki/wal
       - loki-storage:/var/loki
     depends_on:
       - minio
@@ -44,10 +53,10 @@ services:
   promtail:
     image: grafana/promtail:2.9.0
     container_name: promtail
-    command: -config.file=/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yaml
     volumes:
       - ./.logs:/var/log/myapp
-      - ./grafana/promtail.yaml:/etc/promtail/promtail.yml:ro
+      - ./grafana/promtail.yaml:/etc/promtail/promtail.yaml:ro
       - promtail-storage:/var/lib/promtail
     networks:
       - backend
@@ -83,8 +92,8 @@ services:
     entrypoint: >
       /bin/sh -c "
       mc alias set local http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} &&
-      mc mb -p local/${MINIO_BUCKET} || true &&
-      mc anonymous set none local/${MINIO_BUCKET} || true
+      mc mb -p local/${MINIO_LOKI_BUCKET} || true &&
+      mc anonymous set none local/${MINIO_LOKI_BUCKET} || true
       "
     networks:
       - backend
@@ -130,18 +139,21 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
     container_name: keycloak
-    command: start
+    command: start-dev
     ports:
       - "${KEYCLOAK_PORT}:8080"
     environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: ${KC_DB}
       KC_DB_URL_HOST: ${KC_DB_URL_HOST}
       KC_DB_URL_PORT: ${KC_DB_URL_PORT}
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
-      KC_DB_USERNAME: ${KC_DB_USERNAME}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HTTP_ENABLED: ${KC_HTTP_ENABLED}
+      KC_HOSTNAME_STRICT: ${KC_HOSTNAME_STRICT}
     depends_on:
       postgres:
         condition: service_healthy
