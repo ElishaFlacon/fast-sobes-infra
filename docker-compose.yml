@@ -1,0 +1,83 @@
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "16000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    networks:
+      - backend
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "16001:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-storage:/prometheus
+    networks:
+      - backend
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "16004:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki.yaml:/etc/loki/local-config.yaml:ro
+      - loki-storage:/var/loki
+    networks:
+      - backend
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - ./.logs:/var/log/myapp
+      - ./promtail.yml:/etc/promtail/promtail.yml:ro
+      - promtail-storage:/var/lib/promtail
+    command: -config.file=/etc/promtail/promtail.yml
+    networks:
+      - backend
+
+  crdb:
+    image: cockroachdb/cockroach:v25.3.4
+    container_name: roach-single
+    hostname: roach-single
+    command: start-single-node --insecure --http-addr=roach-single:8080
+    ports:
+      - "26257:26257"
+      - "16002:8080"
+    volumes:
+      - crdb-storage-1:/cockroach/cockroach-data
+    networks:
+      - backend
+
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    container_name: envoy
+    ports:
+      - "10000:8080"
+      - "16003:9901"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - ./envoy/service.pb:/etc/envoy/service.pb:ro
+    networks:
+      - backend
+
+volumes:
+  grafana-storage:
+  loki-storage:
+  crdb-storage-1:
+  prometheus-storage:
+  promtail-storage:
+
+networks:
+  backend:
+    driver: bridge
