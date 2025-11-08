@@ -1,9 +1,9 @@
-.PHONY: dev run-dev run-prod down stop clean logs update
+.PHONY: run run-dev run-prod down stop clean clean-all logs update
 
 # ==============================================================================
 # Docker compose commands
 
-run-dev:
+run:
 	@echo "Starting dev docker containers..."
 	docker compose -f docker-compose.yml up --build
 
@@ -27,10 +27,17 @@ stop:
 	docker compose stop
 
 clean:
-	docker system prune -f
+	@echo "Cleaning docker data..."
+	docker compose system prune -f
+
+# DO NOT USE IF YOU DONT KNOW WHAT IS IT
+clean-all:
+	@echo "Cleaning ALL docker data..."
+	docker system prune -a --volumes -f
 
 logs:
-	docker logs -f
+	@echo "View docker containers logs..."
+	docker compose logs -f
 
 # ==============================================================================
 # CI\CD support
