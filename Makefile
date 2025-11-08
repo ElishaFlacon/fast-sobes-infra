@@ -1,11 +1,15 @@
-.PHONY: run down clean logs
+.PHONY: run-dev run-prod down clean logs
 
 # ==============================================================================
 # Docker compose commands
 
-run:
+run-dev:
 	@echo "Starting docker environment"
 	docker-compose -f docker-compose.yml up --build
+
+run-prod:
+	@echo "Starting docker environment"
+	docker-compose -f docker-compose.yml up -d --build
 
 # ==============================================================================
 # Docker support
