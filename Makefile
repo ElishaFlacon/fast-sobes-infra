@@ -5,11 +5,11 @@
 
 run-dev:
 	@echo "Starting dev docker containers..."
-	docker-compose -f docker-compose.yml up --build
+	docker compose -f docker-compose.yml up --build
 
 run-prod:
 	@echo "Starting prod docker containers..."
-	docker-compose -f docker-compose.yml up -d --build
+	docker compose -f docker-compose.yml up -d --build
 
 # ==============================================================================
 # Docker support
