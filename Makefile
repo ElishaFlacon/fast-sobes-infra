@@ -28,7 +28,7 @@ stop:
 
 clean:
 	@echo "Cleaning docker data..."
-	docker compose system prune -f
+	docker system prune -f
 
 # DO NOT USE IF YOU DONT KNOW WHAT IS IT
 clean-all:
