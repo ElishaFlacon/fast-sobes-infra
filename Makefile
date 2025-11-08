@@ -4,11 +4,11 @@
 # Docker compose commands
 
 run-dev:
-	@echo "Starting docker environment"
+	@echo "Run DEV docker environment"
 	docker-compose -f docker-compose.yml up --build
 
 run-prod:
-	@echo "Starting docker environment"
+	@echo "Run PROD docker environment"
 	docker-compose -f docker-compose.yml up -d --build
 
 # ==============================================================================
