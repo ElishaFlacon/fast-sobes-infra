@@ -4,16 +4,16 @@
 # Docker compose commands
 
 run:
-	@echo "Starting dev docker containers..."
+	@echo "Starting docker containers..."
 	docker compose -f docker-compose.yml up --build
 
 run-dev:
 	@echo "Starting dev docker containers..."
-	docker compose -f docker-compose.yml up --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 run-prod:
 	@echo "Starting prod docker containers..."
-	docker compose -f docker-compose.yml up -d --build
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 # ==============================================================================
 # Docker support
