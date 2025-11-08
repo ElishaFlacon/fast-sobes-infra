@@ -1,7 +1,11 @@
-.PHONY: run-dev run-prod down clean logs update
+.PHONY: dev run-dev run-prod down stop clean logs update
 
 # ==============================================================================
 # Docker compose commands
+
+run-dev:
+	@echo "Starting dev docker containers..."
+	docker compose -f docker-compose.yml up --build
 
 run-dev:
 	@echo "Starting dev docker containers..."
