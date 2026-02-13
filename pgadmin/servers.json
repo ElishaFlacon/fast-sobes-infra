@@ -1,9 +1,27 @@
 {
     "Servers": {
-        "Fast Sobes": {
-            "Name": "Fast Sobes",
+        "SSO": {
+            "Name": "SSO",
             "Group": "Servers",
-            "Host": "postgres",
+            "Host": "sso-postgres",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "postgres",
+            "SSLMode": "prefer"
+        },
+        "HH": {
+            "Name": "HH",
+            "Group": "Servers",
+            "Host": "hh-postgres",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "postgres",
+            "SSLMode": "prefer"
+        },
+        "Searches": {
+            "Name": "Searches",
+            "Group": "Servers",
+            "Host": "searches-postgres",
             "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "postgres",

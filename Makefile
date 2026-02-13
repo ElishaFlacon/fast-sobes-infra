@@ -1,43 +1,48 @@
-.PHONY: run run-dev run-prod down stop clean clean-all logs update
+.PHONY: run run-prod stop down logs clean clean-all env update
+
+COMPOSE=docker compose --env-file .env -f compose.yml
 
 # ==============================================================================
 # Docker compose commands
 
 run:
-	@echo "Starting docker containers..."
-	docker compose -f docker-compose.yml up --build
-
-run-dev:
-	@echo "Starting dev docker containers..."
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+	@echo "Starting local containers..."
+	$(COMPOSE) up --build
 
 run-prod:
-	@echo "Starting prod docker containers..."
-	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	@echo "Starting prod containers..."
+	$(COMPOSE) up -d --build
 
 # ==============================================================================
 # Docker support
-
-down:
-	@echo "Stopping and removing all docker containers"
-	docker compose down
 
 stop:
 	@echo "Stopping docker containers"
 	docker compose stop
 
-clean:
-	@echo "Cleaning docker data..."
-	docker system prune -f
-
-# DO NOT USE IF YOU DONT KNOW WHAT IS IT
-clean-all:
-	@echo "Cleaning ALL docker data..."
-	docker system prune -a --volumes -f
+down:
+	@echo "Stopping and removing all docker containers"
+	docker compose down
 
 logs:
 	@echo "View docker containers logs..."
 	docker compose logs -f
+
+clean:
+	@echo "Cleaning docker unused data..."
+	docker system prune -f
+
+# DO NOT USE IF YOU DONT KNOW WHAT IT IS
+clean-all:
+	@echo "Cleaning ALL docker data..."
+	docker system prune -a --volumes -f
+
+# ==============================================================================
+# Env support
+
+env:
+	@test -f .env || cp .env.example .env
+	@echo "Env files initialized in "
 
 # ==============================================================================
 # CI\CD support
