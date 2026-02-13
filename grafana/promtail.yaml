@@ -3,16 +3,23 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /var/lib/promtail/positions.yaml
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: backend
+  - job_name: backend-file-logs
     static_configs:
       - targets:
           - localhost
         labels:
           job: backend
-          __path__: /var/log/myapp/*.log
+          __path__: /var/log/fast-sobes/*/*.log
+    relabel_configs:
+      - source_labels: [__path__]
+        regex: /var/log/fast-sobes/([^/]+)/[^/]+\.log
+        target_label: service
+      - source_labels: [__path__]
+        regex: /var/log/fast-sobes/[^/]+/([^/]+)\.log
+        target_label: instance

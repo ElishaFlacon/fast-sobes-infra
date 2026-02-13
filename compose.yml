@@ -59,7 +59,7 @@ services:
       - .env
     command: -config.file=/etc/promtail/promtail.yaml
     volumes:
-      - ./.logs:/var/log/myapp
+      - fast-sobes-logs:/var/log/fast-sobes:ro
       - ./grafana/promtail.yaml:/etc/promtail/promtail.yaml:ro
       - promtail-storage:/var/lib/promtail
     networks:
@@ -102,7 +102,7 @@ services:
       mc anonymous set none local/${MINIO_LOKI_BUCKET} || true
       "
     networks:
-      - bfast-sobes-backendd
+      - fast-sobes-backend
     restart: "no"
 
   pgadmin:
@@ -117,8 +117,6 @@ services:
     volumes:
       - pgadmin-storage:/var/lib/pgadmin
       - ./pgadmin/servers.json:/pgadmin4/servers.json:ro
-    depends_on:
-      - postgres
     networks:
       - fast-sobes-backend
     restart: unless-stopped
@@ -128,6 +126,8 @@ volumes:
   loki-storage:
   prometheus-storage:
   promtail-storage:
+  fast-sobes-logs:
+    name: fast-sobes-logs
   minio-storage:
   pgadmin-storage:
 
