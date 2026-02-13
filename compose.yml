@@ -21,7 +21,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./grafana/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ./grafana/prometheus.yaml:/etc/prometheus/prometheus.yml:ro
       - prometheus-storage:/prometheus
     networks:
       - fast-sobes-backend

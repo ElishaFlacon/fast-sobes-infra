@@ -4,6 +4,12 @@ server:
   http_listen_port: 3100
   log_level: warn
 
+common:
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
 ingester:
   wal:
     enabled: true
@@ -12,8 +18,14 @@ ingester:
   max_chunk_age: 1h
   lifecycler:
     ring:
+      replication_factor: 1
       kvstore:
         store: inmemory
+
+distributor:
+  ring:
+    kvstore:
+      store: inmemory
 
 schema_config:
   configs:
