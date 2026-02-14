@@ -126,10 +126,10 @@ volumes:
   loki-storage:
   prometheus-storage:
   promtail-storage:
-  fast-sobes-logs:
-    name: fast-sobes-logs
   minio-storage:
   pgadmin-storage:
+  fast-sobes-logs:
+    name: fast-sobes-logs
 
 networks:
   fast-sobes-backend:

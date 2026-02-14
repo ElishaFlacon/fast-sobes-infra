@@ -9,17 +9,47 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: backend-file-logs
+  - job_name: hh-service-logs
     static_configs:
       - targets:
           - localhost
         labels:
           job: backend
-          __path__: /var/log/fast-sobes/*/*.log
-    relabel_configs:
-      - source_labels: [__path__]
-        regex: /var/log/fast-sobes/([^/]+)/[^/]+\.log
-        target_label: service
-      - source_labels: [__path__]
-        regex: /var/log/fast-sobes/[^/]+/([^/]+)\.log
-        target_label: instance
+          service: hh-service
+          __path__: /var/log/fast-sobes/hh-service/*.log
+    pipeline_stages:
+      - regex:
+          source: filename
+          expression: ^/var/log/fast-sobes/hh-service/(?P<instance>[^/]+)\.log$
+      - labels:
+          instance:
+
+  - job_name: sso-service-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: backend
+          service: sso-service
+          __path__: /var/log/fast-sobes/sso-service/*.log
+    pipeline_stages:
+      - regex:
+          source: filename
+          expression: ^/var/log/fast-sobes/sso-service/(?P<instance>[^/]+)\.log$
+      - labels:
+          instance:
+
+  - job_name: user-searches-service-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: backend
+          service: user-searches-service
+          __path__: /var/log/fast-sobes/user-searches-service/*.log
+    pipeline_stages:
+      - regex:
+          source: filename
+          expression: ^/var/log/fast-sobes/user-searches-service/(?P<instance>[^/]+)\.log$
+      - labels:
+          instance:
